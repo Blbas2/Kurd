@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Galaxy - Secure Login</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: 'Segoe UI', sans-serif;
+            overflow: hidden;
+            transition: background 1.5s ease-in-out;
+        }
+
+        .bg-galaxy {
+            background: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed;
+            background-size: cover;
+        }
+
+        .bg-ai {
+            background: url('https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&w=1500&q=80') no-repeat center center fixed !important;
+            background-size: cover !important;
+        }
+
+        #main-container {
+            display: flex; justify-content: center; align-items: center; height: 100vh;
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.75);
+            padding: 35px; border-radius: 30px;
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white; text-align: center; width: 340px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+        }
+
+        input {
+            width: 100%; padding: 14px; margin: 10px 0;
+            border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.1);
+            color: white; outline: none;
+        }
+
+        .btn {
+            width: 100%; padding: 14px; border-radius: 15px;
+            border: none; background: linear-gradient(45deg, #00d2ff, #3a7bd5);
+            color: white; font-weight: bold; cursor: pointer; transition: 0.3s;
+            margin-top: 15px;
+        }
+
+        /* بەشی پەیامی هەڵە */
+        #error-msg {
+            color: #ff4d4d;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none; /* لە سەرەتادا شاراوەیە */
+            font-weight: bold;
+        }
+
+        .social-section { margin-top: 25px; display: flex; justify-content: center; gap: 20px; }
+        .social-btn { width: 50px; height: 50px; border-radius: 50%; display: flex; justify-content: center; align-items: center; text-decoration: none; font-size: 24px; }
+        .snapchat { background: #FFFC00; color: white; text-shadow: 0 0 3px rgba(0,0,0,0.3); }
+        .tiktok { background: #000; color: white; border: 1px solid white; }
+
+        /* بەشی چات */
+        #ai-section { display: none; flex-direction: column; align-items: center; width: 100%; }
+        .chat-box { width: 90%; max-width: 500px; height: 450px; background: rgba(10, 10, 25, 0.9); border-radius: 25px; border: 1px solid #00d2ff; display: flex; flex-direction: column; padding: 20px; }
+        #chat-content { flex-grow: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { padding: 12px; border-radius: 15px; max-width: 80%; }
+        .user-msg { background: #3a7bd5; align-self: flex-end; }
+        .ai-msg { background: #2c3e50; align-self: flex-start; border-right: 4px solid #00d2ff; }
+    </style>
+</head>
+<body class="bg-galaxy" id="mainBody">
+
+    <div id="main-container">
+        <div class="card" id="login-card">
+            <h2>چوونەژوورەوە</h2>
+            <input type="email" id="email" placeholder="ئیمەیڵ">
+            <input type="password" id="pass" placeholder="پاسوۆرد">
+            
+            <button class="btn" onclick="checkLogin()">داخڵبوون</button>
+            
+            <div id="error-msg">هەڵە لە پاسوۆرددا هەیە!</div>
+
+            <div class="social-section">
+                <a href="https://www.snapchat.com/add/bas_123y" target="_blank" class="social-btn snapchat"><i class="fab fa-snapchat"></i></a>
+                <a href="https://www.tiktok.com/@bas_123y" target="_blank" class="social-btn tiktok"><i class="fab fa-tiktok"></i></a>
+            </div>
+        </div>
+
+        <div id="ai-section">
+            <h2 style="color: white; text-shadow: 0 0 15px #00d2ff; margin-bottom: 20px;">سیستەمی ژیری دەستکرد</h2>
+            <div class="chat-box">
+                <div id="chat-content">
+                    <div class="msg ai-msg">سڵاو! زانیارییەکان ڕاست بوون. چۆن یارمەتیت بدەم؟</div>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <input type="text" id="userInput" placeholder="لێرە بنووسە..." style="margin:0; flex-grow:1;">
+                    <button onclick="askAI()" style="width:70px; background:#00d2ff; border:none; border-radius:15px; color:white;">ناردن</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function checkLogin() {
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+            const errorDiv = document.getElementById('error-msg');
+
+            // مەرجەکە: دەبێت ئیمەیڵ و پاسوۆرد وەک یەک بن
+            if (email !== "" && pass !== "") {
+                if (email === pass) {
+                    // سەرکەوتوو بوو
+                    errorDiv.style.display = 'none';
+                    document.getElementById('login-card').style.display = 'none';
+                    document.getElementById('mainBody').className = 'bg-ai';
+                    document.getElementById('ai-section').style.display = 'flex';
+                } else {
+                    // هەڵە بوو - نیشاندانی پەیامەکە
+                    errorDiv.style.display = 'block';
+                }
+            } else {
+                errorDiv.innerText = "تکایە هەموو خانەکان پڕ بکەرەوە";
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function askAI() {
+            const input = document.getElementById('userInput');
+            const content = document.getElementById('chat-content');
+            if(!input.value.trim()) return;
+            content.innerHTML += `<div class="msg user-msg">${input.value}</div>`;
+            input.value = "";
+            content.scrollTop = content.scrollHeight;
+            setTimeout(() => {
+                content.innerHTML += `<div class="msg ai-msg">من وەک AI وەڵامت دەدەمەوە...</div>`;
+                content.scrollTop = content.scrollHeight;
+            }, 800);
+        }
+    </script>
+</body>
+</html>
